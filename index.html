@@ -43,29 +43,29 @@
 			<!-- Monitor -->
 			<div class="col-12" id="countData">
 				<div class="monitor">
-					<div class="row mt-4">
+					<div class="row" style="margin-top: 40px;">
 						<div class="col-sm-3">
-							<div class="card" style="background-color: rgb(136, 198, 224);">
+							<div class="card" style="background-color: rgb(204, 234, 247);">
 							  <div class="card-body" id="sumTotal">
 		
 							  </div>
 							</div>
 						  </div>
 						  <div class="col-sm-3">
-							<div class="card" style="background-color: rgb(255, 205, 159);">
+							<div class="card" style="background-color: rgb(252, 225, 199);">
 							  <div class="card-body" id="sumPositif">
 				
 							  </div>
 							</div>
 						  </div>
 						<div class="col-sm-3">
-						  <div class="card" style="background-color: rgb(176, 209, 169);">
+						  <div class="card" style="background-color: rgb(202, 231, 197);">
 							<div class="card-body" id="sumSembuh">
 							</div>
 						  </div>
 						</div>
 						<div class="col-sm-3">
-						  <div class="card" style="background-color: rgb(255, 157, 157);">
+						  <div class="card" style="background-color: rgb(255, 205, 205);">
 							<div class="card-body" id="sumMeninggal">
 							</div>
 						  </div>
@@ -77,47 +77,99 @@
 
 			<!-- text berjalan -->
 			<div class="col-12" style="margin-top:30px;" id="textJalan">
-				<marquee style="background-color: yellow;">
-					Teks Ini Berjalan Dengan Background Kuning
+				<marquee id="news-run" style="background-color: rgb(255, 255, 101);">
+					
 				</marquee>
 			</div>
 			<!-- text berjalan -->
 
-			<!-- Form Todo -->
-			<div class="col-5" style="margin-top:20px" id="formTodo">
+			<!-- Add Form Todo -->
+			<div class="col-5" style="margin-top:20px" id="form-Todo">
 				<p>
 					<h2>Form Todo:</h2>
 				</p>
 				<form id="formTodo">
 					<div class="mb-3 row" style="margin-top: 18px;">
-						<label for="inputPassword" class="col-sm-2 col-form-label">Title</label>
-						<div class="col-sm-10">
+						<label for="inputPassword" class="col-sm-3 col-form-label">Title</label>
+						<div class="col-sm-9">
 						  	<input type="text" class="form-control" id="title" placeholder="Masukan Title">
 						</div>
 					</div>
 					<div class="mb-3 row">
-						<label for="inputPassword" class="col-sm-2 col-form-label">Description</label>
-						<div class="col-sm-10">
-						  	<textarea class="form-control" id="description"cols="20" rows="3" placeholder="Masukan Description"></textarea>
+						<label for="inputPassword" class="col-sm-3 col-form-label">Description</label>
+						<div class="col-sm-9">
+						  	<textarea class="form-control" id="description"cols="20" rows="4" placeholder="Masukan Description"></textarea>
+						</div>
+					</div>
+					<div class="mb-3 row" hidden>
+						<label for="inputPassword" class="col-sm-3 col-form-label">Status</label>
+						<div class="col-sm-9">
+						  	<input type="text" class="form-control" id="status" placeholder="Masukan Status" value="belum">
 						</div>
 					</div>
 					<div class="mb-3 row">
-						<label for="inputPassword" class="col-sm-2 col-form-label">Status</label>
-						<div class="col-sm-10">
-						  	<input type="text" class="form-control" id="status" placeholder="Masukan Status">
-						</div>
-					</div>
-					<div class="mb-3 row">
-						<label for="inputPassword" class="col-sm-2 col-form-label">Due Date</label>
-						<div class="col-sm-10">
+						<label for="inputPassword" class="col-sm-3 col-form-label">Due Date</label>
+						<div class="col-sm-9">
 						  	<input type="date" class="form-control" id="due_date" placeholder="Masukan Due Date">
 						</div>
 					</div>
-					<button type="submit" class="btn btn-primary" style="margin-left: 90px; width: 100px;">Submit</button>
-					<button type="submit" class="btn btn-primary" style="width: 100px;">Reset</button>
+
+					<div class="mb-3 row">
+						<label class="col-sm-3 col-form-label"></label>
+						<div class="col-sm-9">
+							<button type="submit" class="btn btn-primary" style="width: 100px; margin-right: 5px;">Submit</button>
+							<button type="reset" class="btn btn-primary" style="width: 100px;">Reset</button>
+						</div>
+					</div>
+					
 				  </form>
 			</div>
-			<!-- Form Todo End -->
+			<!-- Add Form Todo  End -->
+
+
+			<!-- Edit Form Todo -->
+			<div class="col-5" style="margin-top:20px" id="form-edit-Todo">
+				<p>
+					<h2>Edit Todo:</h2>
+				</p>
+				<form id="editFormTodo">
+					<div class="mb-3 row" style="margin-top: 18px;">
+						<label for="inputPassword" class="col-sm-3 col-form-label">Title</label>
+						<div class="col-sm-9">
+						  	<input type="text" class="form-control" id="edit-title" placeholder="Masukan Title">
+						</div>
+					</div>
+					<div class="mb-3 row">
+						<label for="inputPassword" class="col-sm-3 col-form-label">Description</label>
+						<div class="col-sm-9">
+						  	<textarea class="form-control" id="edit-description"cols="20" rows="4" placeholder="Masukan Description"></textarea>
+						</div>
+					</div>
+					<div class="mb-3 row" hidden>
+						<label for="inputPassword" class="col-sm-3 col-form-label">Status</label>
+						<div class="col-sm-9">
+						  	<input type="text" class="form-control" id="edit-status" placeholder="Masukan Status">
+						</div>
+					</div>
+					<div class="mb-3 row">
+						<label for="inputPassword" class="col-sm-3 col-form-label">Due Date</label>
+						<div class="col-sm-9">
+						  	<input type="date" class="form-control" id="edit-due_date" placeholder="Masukan Due Date">
+						</div>
+					</div>
+
+					<div class="mb-3 row">
+						<label class="col-sm-3 col-form-label"></label>
+						<div class="col-sm-9">
+							<button type="submit" class="btn btn-primary" style="width: 100px; margin-right: 5px;">Submit</button>
+							<a href="#" id="cancel-edit-todo" class="btn btn-warning" style="width: 100px;">Cancel</a>
+						</div>
+					</div>
+					
+				  </form>
+			</div>
+			<!-- Edit Form Todo End -->
+
 			
 			<!-- List Todo -->
 			<div class="col-7" style="margin-top:20px" id="listTodo">
@@ -152,12 +204,12 @@
 			<!-- List Todo -->
 
 			<!-- news -->
-			<div class="col-4" style="margin-top:20px">
+			<!-- <div class="col-4" style="margin-top:20px">
 				hallo hal
 			</div>
 			<div class="col-8" style="margin-top:20px">
 				hallo ha
-			</div>
+			</div> -->
 			<!-- news -->
 		</div>
 	</div>

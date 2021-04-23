@@ -2,6 +2,8 @@ $(document).ready(()=>{
     console.log('hello world')
     
     // get count data Covid
+    dataNews()
+
     dataCovidTotal()
     dataCovidPositif()
     dataCovidSembuh()
@@ -23,14 +25,14 @@ $(document).ready(()=>{
 
     $('#navbarHome').on('click', (e)=>{
         e.preventDefault()
-        $('#formTodo').hide()
+        $('#form-Todo').hide()
         $('#listTodo').hide()
         $('#textJalan').hide()
     })
 
     $('#navbarTodo').on('click', (e)=>{
         e.preventDefault()
-        $('#formTodo').show()
+        $('#form-Todo').show()
         $('#listTodo').show()
         $('#textJalan').show()
     })
@@ -54,6 +56,17 @@ $(document).ready(()=>{
         e.preventDefault()
         addTodo()
     })
+
+    $('#editFormTodo').on('submit', (e)=>{
+        e.preventDefault()
+        editTodo()
+    })
+
+    $('#cancel-edit-todo').on('click', (e)=>{
+        e.preventDefault()
+        $('#form-Todo').show()
+        $('#form-edit-Todo').hide()
+    })
     
 })
 
@@ -63,6 +76,7 @@ const checkIsLoggedIn = () =>{
         $('#content-data').show()
         $('#formLogin').hide()
         $('#register-login').hide()
+        $('#form-edit-Todo').hide()
     }else{
         $('#navbar').hide()
         $('#content-data').hide()
@@ -143,15 +157,17 @@ const listTodo = () =>{
         console.log(data.data,'ini nih datanya')
         $('#table-todo').empty()
         data.data.forEach(todo => {
+            let due_date = new Date(todo.due_date).toISOString().split('T')[0]
+
             $('#table-todo').append(`
             <tr>
                 <td>${todo.title}</td>
                 <td>${todo.description}</td>
                 <td>${todo.status}</td>
-                <td>${todo.due_date}</td>
+                <td>${due_date}</td>
                 <td>
-                    <a href="#" onClick="deleteTodo(${todo.id})"><i class="fas fa-trash-alt" title="hapus Todo"></i></a>&nbsp;&nbsp;
-                    <a href="#" onClick="deleteTodo(${todo.id})"><i class="fas fa-edit" title="edit Todo"></i></a>
+                    <a href="#" onClick="deleteTodo(${todo.id})" style="margin-right:10px; margin-left:7px;"><i class="fas fa-trash-alt" title="hapus Todo"></i></a>
+                    <a href="#" onClick="formEditTodo(${todo.id})"><i class="fas fa-edit" title="edit Todo"></i></a>
                 </td>
             </tr>
             `)
@@ -222,13 +238,78 @@ const deleteTodo = (id) => {
 }
 
 
+const formEditTodo = (id) =>{    
+    $.ajax({
+        method: 'GET',
+        url: `http://localhost:3000/todos/${id}`,
+        headers:{
+            access_token: localStorage.getItem('access_token')
+        }
+    })
+    // todoDate.toISOString().split('T')[0]
+    .done((data)=>{
+        let due_date = new Date(data.data.due_date).toISOString().split('T')[0]
+        localStorage.setItem('TodoId', id)
+        $('#form-Todo').hide()
+        $('#form-edit-Todo').show()
+        $('#edit-title').val(data.data.title)
+        $('#edit-description').val(data.data.description)
+        $('#edit-status').val(data.data.status)
+        $('#edit-due_date').val(due_date)
+    })
+    .fail((err)=>{
+        console.log(err.responseJSON)
+    })
+}
+
+
+const editTodo = () => {
+    const id = localStorage.getItem('TodoId')
+    let title = $('#edit-title').val()
+    let description = $('#edit-description').val()
+    let status = $('#edit-status').val()
+    let due_date = $('#edit-due_date').val()
+    
+    $.ajax({
+        method: 'PUT',
+        url: `http://localhost:3000/todos/${id}`,
+        headers:{
+            access_token: localStorage.getItem('access_token')
+        },
+        data:{
+            title,
+            description,
+            status,
+            due_date
+        }
+    })
+    .done((data)=>{
+        listTodo()
+        checkIsLoggedIn()
+        $('#form-Todo').show()
+    })
+    .fail((err)=>{
+        console.log(err.responseJSON)
+    })
+}
 
 
 
-
-
-
-
+const dataNews = () =>{
+    let spasi = '&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;'
+    $.ajax({
+        method: 'GET',
+        url: 'http://localhost:3000/news'
+    })
+    .done((data)=>{
+        data.data.forEach((news)=>{
+            $('#news-run').append(`<a href="${news.url}" target="_blank" style="text-decoration:none">${news.title} ${spasi}</a>`)
+        })
+    })
+    .fail((err)=>{
+        console.log(err)
+    })
+}
 
 
 
@@ -252,6 +333,7 @@ const dataCovidTotal = () =>{
     })
 }
 
+// POSTIF
 const dataCovidPositif = () =>{
     $.ajax({
         method: 'GET',
@@ -270,6 +352,7 @@ const dataCovidPositif = () =>{
     })
 }
 
+// SEMBUH
 const dataCovidSembuh = () =>{
     $.ajax({
         method: 'GET',
@@ -288,6 +371,7 @@ const dataCovidSembuh = () =>{
     })
 }
 
+// MENINGGAL
 const dataCovidMeninggal = () =>{
     $.ajax({
         method: 'GET',
