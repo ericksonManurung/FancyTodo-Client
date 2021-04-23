@@ -163,7 +163,7 @@ const listTodo = () =>{
             <tr>
                 <td>${todo.title}</td>
                 <td>${todo.description}</td>
-                <td>${todo.status}</td>
+                <td><i class="fas fa-check-circle"></i></td>
                 <td>${due_date}</td>
                 <td>
                     <a href="#" onClick="deleteTodo(${todo.id})" style="margin-right:10px; margin-left:7px;"><i class="fas fa-trash-alt" title="hapus Todo"></i></a>
@@ -207,20 +207,25 @@ const addTodo = () =>{
         $('#description').val('')
         $('#status').val('')
         $('#due_date').val('')
-        Toastify({
-            text: "Data Sukses di tambah",
-            duration: 5000
-            
-        }).showToast();
+
+        swal("Success!", "Data Todo berhasil ditambah!", "success");
     })
     .fail((err)=>{
-        console.log(err.responseJSON)
+        let errMsg = err.responseJSON.errorMessage
+        errMsg.forEach(error =>{
+            Toastify({
+                text: error,
+                duration: 3000
+                
+            }).showToast();
+        })
     })
     console.log(title,description,status,due_date)
 }
 
 const deleteTodo = (id) => {
     console.log('halllo deelete',' => ',id)
+    
     $.ajax({
         method: 'DELETE',
         url: `http://localhost:3000/todos/${id}`,
@@ -231,6 +236,7 @@ const deleteTodo = (id) => {
     .done((data)=>{
         console.log(data)
         listTodo()
+        swal("Success!", "Data Todo berhasil dihapus!", "success");
     })
     .fail((err)=>{
         console.log(err.responseJSON)
@@ -246,7 +252,6 @@ const formEditTodo = (id) =>{
             access_token: localStorage.getItem('access_token')
         }
     })
-    // todoDate.toISOString().split('T')[0]
     .done((data)=>{
         let due_date = new Date(data.data.due_date).toISOString().split('T')[0]
         localStorage.setItem('TodoId', id)
@@ -287,6 +292,7 @@ const editTodo = () => {
         listTodo()
         checkIsLoggedIn()
         $('#form-Todo').show()
+        swal("Success!", "Data Todo berhasil diperbarui!", "success");
     })
     .fail((err)=>{
         console.log(err.responseJSON)
@@ -303,7 +309,7 @@ const dataNews = () =>{
     })
     .done((data)=>{
         data.data.forEach((news)=>{
-            $('#news-run').append(`<a href="${news.url}" target="_blank" style="text-decoration:none">${news.title} ${spasi}</a>`)
+            $('#news-run').append(`<a href="${news.url}" target="_blank" id="text-news-jalan">${news.title} ${spasi}</a>`)
         })
     })
     .fail((err)=>{

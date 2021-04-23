@@ -1,0 +1,8 @@
+#text-news-jalan{
+    text-decoration:none;
+    color: black;
+}
+
+#text-news-jalan:hover{
+    color: blue;
+}
