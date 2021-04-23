@@ -1,6 +1,5 @@
 $(document).ready(()=>{
     console.log('hello world')
-    
     // get count data Covid
     dataNews()
 
@@ -166,8 +165,8 @@ const listTodo = () =>{
                 <td><i class="fas fa-check-circle"></i></td>
                 <td>${due_date}</td>
                 <td>
-                    <a href="#" onClick="deleteTodo(${todo.id})" style="margin-right:10px; margin-left:7px;"><i class="fas fa-trash-alt" title="hapus Todo"></i></a>
-                    <a href="#" onClick="formEditTodo(${todo.id})"><i class="fas fa-edit" title="edit Todo"></i></a>
+                    <a onClick="deleteTodo(${todo.id})" style="margin-right:10px; margin-left:7px;"><i class="fas fa-trash-alt" title="hapus Todo"></i></a>
+                    <a onClick="formEditTodo(${todo.id})"><i class="fas fa-edit" title="edit Todo"></i></a>
                 </td>
             </tr>
             `)
