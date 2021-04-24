@@ -3,10 +3,10 @@ $(document).ready(()=>{
     // get count data Covid
     dataNews()
 
-    dataCovidTotal()
     dataCovidPositif()
     dataCovidSembuh()
     dataCovidMeninggal()
+    dataCovidDirawat()
     
     $('#btn-login').on('click',(e) =>{
         $('#register').hide()
@@ -19,22 +19,6 @@ $(document).ready(()=>{
 
     // check login
     checkIsLoggedIn()
-
-    listTodo()
-
-    $('#navbarHome').on('click', (e)=>{
-        e.preventDefault()
-        $('#form-Todo').hide()
-        $('#listTodo').hide()
-        $('#textJalan').hide()
-    })
-
-    $('#navbarTodo').on('click', (e)=>{
-        e.preventDefault()
-        $('#form-Todo').show()
-        $('#listTodo').show()
-        $('#textJalan').show()
-    })
 
     $('#formRegister').on('submit', (e)=>{
         e.preventDefault()
@@ -49,6 +33,7 @@ $(document).ready(()=>{
     $('#logout').on('click', (e)=>{
         e.preventDefault()
         logout()
+        signOut()
     })
 
     $('#formTodo').on('submit', (e)=>{
@@ -59,6 +44,12 @@ $(document).ready(()=>{
     $('#editFormTodo').on('submit', (e)=>{
         e.preventDefault()
         editTodo()
+    })
+
+    $('#status-todoss').on('dblclick', (e)=>{
+        e.preventDefault()
+        alert('hello')
+        console.log('hello')
     })
 
     $('#cancel-edit-todo').on('click', (e)=>{
@@ -76,13 +67,54 @@ const checkIsLoggedIn = () =>{
         $('#formLogin').hide()
         $('#register-login').hide()
         $('#form-edit-Todo').hide()
+        $('#logout').show()
+    
+        listTodo()
     }else{
         $('#navbar').hide()
         $('#content-data').hide()
         $('#formLogin').show()
-        $('#register-login').show()      
+        $('#register-login').show()
+        $('#logout').hide()      
     }
 }
+
+
+// oauth google
+function onSignIn(googleUser) {
+    var profile = googleUser.getBasicProfile();
+    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+    console.log('Name: ' + profile.getName());
+    console.log('Image URL: ' + profile.getImageUrl());
+    console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+    const id_token = googleUser.getAuthResponse().id_token;
+    $.ajax({
+        method: 'POST',
+        url: 'http://localhost:3000/users/googleLogin',
+        data:{
+            token: id_token
+        }
+    })
+    .done((data)=>{
+        const {access_token} = data
+        localStorage.setItem('access_token', access_token)
+    })
+    .fail((err)=>{
+        console.log(err)
+    })
+    .always(()=>{
+        checkIsLoggedIn()
+    })
+}
+
+function signOut() {
+    const auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+        console.log('User signed out.');
+    });
+}
+
+
 
 const regis = () => {
     const email = $('#emailRegis')
@@ -99,12 +131,23 @@ const regis = () => {
     .done((data)=>{
         $('#emailRegis').val('')
         $('#passwordRegis').val('')
+        swal("Success!", "User berhasil register!", "success");
     })
     .fail(err =>{
-        console.log(err.responseJSON.errorMessage)
+        let errMsg = err.responseJSON.errorMessage
+        errMsg.forEach(error =>{
+            Toastify({
+                text: error,
+                gravity: "bottom", // `top` or `bottom`
+                position: "right", // `left`, `center` or `right`
+                backgroundColor: "linear-gradient(to right, #f75b5b, #fc1d1d)",
+                duration: 3000
+                
+            }).showToast();
+        })
     })
     .always(()=>{
-        console.log('selesai')
+        console.log('selesai regis')
     })
 }
 
@@ -130,10 +173,19 @@ const login = () =>{
         listTodo()
     })
     .fail(err =>{
+        let error = err.responseJSON.errorMessage
+        Toastify({
+            text: error,
+            gravity: "bottom", // `top` or `bottom`
+            position: "right", // `left`, `center` or `right`
+            backgroundColor: "linear-gradient(to right, #f75b5b, #fc1d1d)",
+            duration: 3000
+            
+        }).showToast();
         console.log(err.responseJSON.errorMessage)
     })
     .always(()=>{
-        console.log('selesai')
+        console.log('selesai login')
     })
 }
 
@@ -157,16 +209,24 @@ const listTodo = () =>{
         $('#table-todo').empty()
         data.data.forEach(todo => {
             let due_date = new Date(todo.due_date).toISOString().split('T')[0]
-
+            let iconStatus
+            let color
+            if(todo.status === 'belum'){
+                iconStatus = 'fa-times'
+                color = 'red'
+            }else{
+                iconStatus = 'fa-check'
+                color = 'green'
+            }
             $('#table-todo').append(`
             <tr>
                 <td>${todo.title}</td>
                 <td>${todo.description}</td>
-                <td><i class="fas fa-check-circle"></i></td>
+                <td id="logo-click" title='edit status' style="color:${color}" align="center"><i class="fas ${iconStatus}" onClick="editStatusTodo(${todo.id})"></i></td>
                 <td>${due_date}</td>
-                <td>
-                    <a onClick="deleteTodo(${todo.id})" style="margin-right:10px; margin-left:7px;"><i class="fas fa-trash-alt" title="hapus Todo"></i></a>
-                    <a onClick="formEditTodo(${todo.id})"><i class="fas fa-edit" title="edit Todo"></i></a>
+                <td align="center">
+                    <a id="logo-click" onClick="deleteTodo(${todo.id})" style="margin-right:15px;"><i class="fas fa-trash-alt" title="hapus Todo"></i></a>
+                    <a id="logo-click" onClick="formEditTodo(${todo.id})"><i class="fas fa-edit" title="edit Todo"></i></a>
                 </td>
             </tr>
             `)
@@ -176,7 +236,7 @@ const listTodo = () =>{
         console.log(err.responseJSON)
     })
     .always(()=>{
-        console.log('selesai')
+        console.log('selesai list todo')
     })
 }
 
@@ -193,7 +253,7 @@ const addTodo = () =>{
         data:{
             title,
             description,
-            status,
+            status:'belum',
             due_date
         },
         headers:{
@@ -214,32 +274,55 @@ const addTodo = () =>{
         errMsg.forEach(error =>{
             Toastify({
                 text: error,
+                gravity: "bottom", // `top` or `bottom`
+                position: "right", // `left`, `center` or `right`
+                backgroundColor: "linear-gradient(to right, #f75b5b, #fc1d1d)",
                 duration: 3000
                 
             }).showToast();
         })
+        console.log('selesai add todo')
     })
     console.log(title,description,status,due_date)
 }
 
 const deleteTodo = (id) => {
     console.log('halllo deelete',' => ',id)
-    
-    $.ajax({
-        method: 'DELETE',
-        url: `http://localhost:3000/todos/${id}`,
-        headers:{
-            access_token:localStorage.getItem('access_token')
+    swal({
+        title: "Anda Yakin?",
+        text: "Data yang dihapus tidak dapat dikembalikan!",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+    })
+    .then((willDelete) => {
+        if (willDelete) {
+            // proses Ajax
+            $.ajax({
+                method: 'DELETE',
+                url: `http://localhost:3000/todos/${id}`,
+                headers:{
+                    access_token:localStorage.getItem('access_token')
+                }
+            })
+            .done((data)=>{
+                console.log(data)
+                listTodo()
+                swal("data berhasil dihapus!", {
+                    icon: "success",
+                });
+            })
+            .fail((err)=>{
+                console.log(err.responseJSON)
+            })
+            // proses Ajax end
+        }else{
+            swal("data aman tidak jadi dihapus");
         }
-    })
-    .done((data)=>{
-        console.log(data)
-        listTodo()
-        swal("Success!", "Data Todo berhasil dihapus!", "success");
-    })
-    .fail((err)=>{
-        console.log(err.responseJSON)
-    })
+    });
+
+
+    
 }
 
 
@@ -273,33 +356,85 @@ const editTodo = () => {
     let description = $('#edit-description').val()
     let status = $('#edit-status').val()
     let due_date = $('#edit-due_date').val()
-    
-    $.ajax({
-        method: 'PUT',
-        url: `http://localhost:3000/todos/${id}`,
-        headers:{
-            access_token: localStorage.getItem('access_token')
-        },
-        data:{
-            title,
-            description,
-            status,
-            due_date
+    swal({
+        title: "Anda Yakin?",
+        text: "Data akan diperbarui bila anda setuju.",
+        buttons: true,
+        dangerMode: true,
+    })
+    .then((willEdit) => {
+        if (willEdit) {
+            // proses Ajax
+            $.ajax({
+                method: 'PUT',
+                url: `http://localhost:3000/todos/${id}`,
+                headers:{
+                    access_token: localStorage.getItem('access_token')
+                },
+                data:{
+                    title,
+                    description,
+                    status,
+                    due_date
+                }
+            })
+            .done((data)=>{
+                listTodo()
+                checkIsLoggedIn()
+                $('#form-Todo').show()
+                // swal message
+                swal("data berhasil diedit", {
+                    icon: "success",
+                });
+            })
+            .fail((err)=>{
+                console.log(err.responseJSON)
+            })
+            // proses Ajax end
+
+        } else {
+            swal("data tidak jadi di edit");
         }
-    })
-    .done((data)=>{
-        listTodo()
-        checkIsLoggedIn()
-        $('#form-Todo').show()
-        swal("Success!", "Data Todo berhasil diperbarui!", "success");
-    })
-    .fail((err)=>{
-        console.log(err.responseJSON)
-    })
+    });
+}
+
+const editStatusTodo = (id) =>{
+    swal({
+        title: "Anda Yakin?",
+        text: "Status tidak dapat diubah kembali apabila complete",
+        buttons: true,
+        dangerMode: true,
+      })
+      .then((editStatus) => {
+        if (editStatus) {
+            $.ajax({
+                method: 'PATCH',
+                url: `http://localhost:3000/todos/${id}`,
+                headers:{
+                    access_token: localStorage.getItem('access_token')
+                },
+                data:{
+                    status:'sudah'
+                }
+            })
+            .done((data)=>{
+                swal("status complete", {
+                    icon: "success",
+                });
+
+                listTodo()
+            })
+            .fail((err)=>{
+                console.log(err)
+            })
+        } else {
+          swal("status tidak jadi diubah");
+        }
+    });
 }
 
 
-
+// 3rd Party News
 const dataNews = () =>{
     let spasi = '&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;'
     $.ajax({
@@ -319,35 +454,16 @@ const dataNews = () =>{
 
 
 // 3rd Party Kawal Covid
-const dataCovidTotal = () =>{
+// POSTIF
+const dataCovidPositif = () =>{
     $.ajax({
         method: 'GET',
         url: 'http://localhost:3000/kawalCovidIndonesia'
     })
     .done((data)=>{
-        // console.log(data.data[17].attributes)
-        $('#sumTotal').append(`
-        <h5 class="card-title">${data.data[17].attributes.Country_Region}</h5>
-        <h2>${data.data[17].attributes.Last_Update}</h2>`)
-    })
-    .fail(err =>{
-        console.log(err.responseJSON.errorMessage)
-    })
-    .always(()=>{
-        console.log('selesai')
-    })
-}
-
-// POSTIF
-const dataCovidPositif = () =>{
-    $.ajax({
-        method: 'GET',
-        url: 'http://localhost:3000/kawalCovidPositif'
-    })
-    .done((data)=>{
         $('#sumPositif').append(`
-        <h5 class="card-title">${data.data.name}</h5>
-        <h2>${data.data.value}</h2>`)
+        <h4 class="card-title">Kasus Positif</h4>
+        <h2>${data.data[0].positif}</h2>`)
     })
     .fail(err =>{
         console.log(err.responseJSON.errorMessage)
@@ -361,12 +477,32 @@ const dataCovidPositif = () =>{
 const dataCovidSembuh = () =>{
     $.ajax({
         method: 'GET',
-        url: 'http://localhost:3000/kawalCovidSembuh'
+        url: 'http://localhost:3000/kawalCovidIndonesia'
     })
     .done((data)=>{
         $('#sumSembuh').append(`
-        <h5 class="card-title">${data.data.name}</h5>
-        <h2>${data.data.value}</h2>`)
+        <h4 class="card-title">Kasus Sembuh</h4>
+        <h2>${data.data[0].sembuh}</h2>`)
+    })
+    .fail(err =>{
+        console.log(err.responseJSON.errorMessage)
+    })
+    .always(()=>{
+        console.log('selesai')
+    })
+}
+
+// DIRAWAT
+const dataCovidDirawat = () =>{
+    $.ajax({
+        method: 'GET',
+        url: 'http://localhost:3000/kawalCovidIndonesia'
+    })
+    .done((data)=>{
+        // console.log(data.data[0])
+        $('#sumTotal').append(`
+        <h4 class="card-title">Kasus Dirawat</h4>
+        <h2>${data.data[0].dirawat}</h2>`)
     })
     .fail(err =>{
         console.log(err.responseJSON.errorMessage)
@@ -380,12 +516,12 @@ const dataCovidSembuh = () =>{
 const dataCovidMeninggal = () =>{
     $.ajax({
         method: 'GET',
-        url: 'http://localhost:3000/kawalCovidMeninggal'
+        url: 'http://localhost:3000/kawalCovidIndonesia'
     })
     .done((data)=>{
         $('#sumMeninggal').append(`
-        <h5 class="card-title">${data.data.name}</h5>
-        <h2>${data.data.value}</h2>`)
+        <h4 class="card-title">Kasus Meninggal</h4>
+        <h2>${data.data[0].meninggal}</h2>`)
     })
     .fail(err =>{
         console.log(err.responseJSON.errorMessage)
