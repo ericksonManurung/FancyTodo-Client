@@ -1,24 +1,33 @@
 $(document).ready(()=>{
     console.log('hello world')
-    // get count data Covid
-    dataNews()
 
+    // get API News
+    dataNews()
+    // get API KawalCovid
     dataCovidPositif()
     dataCovidSembuh()
     dataCovidMeninggal()
     dataCovidDirawat()
-    
-    $('#btn-login').on('click',(e) =>{
-        $('#register').hide()
-        $('#login').show()
-    })
+    // get data todo
+
+    // btn regis
     $('#btn-regis').on('click',(e) =>{
-        $('#login').hide()
-        $('#register').show()
+        $('#formLogin').hide()
+        $('#formRegister').show()
+    })
+    // btn  cancel regis
+    $('#cancel-regis').on('click',(e)=>{
+        $('#formLogin').show()
+        $('#formRegister').hide()
     })
 
     // check login
     checkIsLoggedIn()
+
+    $('#judul-app').on('click',(e)=>{
+        e.preventDefault()
+        dataNews()
+    })
 
     $('#formRegister').on('submit', (e)=>{
         e.preventDefault()
@@ -30,17 +39,20 @@ $(document).ready(()=>{
         login()
     })
 
+    // button logout
     $('#logout').on('click', (e)=>{
         e.preventDefault()
         logout()
         signOut()
     })
 
+    // add Todo
     $('#formTodo').on('submit', (e)=>{
         e.preventDefault()
         addTodo()
     })
 
+    // edit
     $('#editFormTodo').on('submit', (e)=>{
         e.preventDefault()
         editTodo()
@@ -54,8 +66,8 @@ $(document).ready(()=>{
 
     $('#cancel-edit-todo').on('click', (e)=>{
         e.preventDefault()
-        $('#form-Todo').show()
-        $('#form-edit-Todo').hide()
+        $('#formTodo').show()
+        $('#editFormTodo').hide()
     })
     
 })
@@ -63,22 +75,21 @@ $(document).ready(()=>{
 const checkIsLoggedIn = () =>{
     if(localStorage.getItem('access_token')){
         $('#navbar').show()
-        $('#content-data').show()
-        $('#formLogin').hide()
-        $('#register-login').hide()
-        $('#form-edit-Todo').hide()
+        $('#content-body').show()
+        $('#formTodo').show()
         $('#logout').show()
-    
+        $('#editFormTodo').hide()
+        $('#register-login').hide()
         listTodo()
     }else{
         $('#navbar').hide()
-        $('#content-data').hide()
-        $('#formLogin').show()
+        $('#content-body').hide()
         $('#register-login').show()
-        $('#logout').hide()      
+        $('#formRegister').hide()
+        $('#logout').hide()   
+        // $('#logout').show()  
     }
 }
-
 
 // oauth google
 function onSignIn(googleUser) {
@@ -131,6 +142,8 @@ const regis = () => {
     .done((data)=>{
         $('#emailRegis').val('')
         $('#passwordRegis').val('')
+        $('#formLogin').show()
+        $('#formRegister').hide()
         swal("Success!", "User berhasil register!", "success");
     })
     .fail(err =>{
@@ -192,6 +205,7 @@ const login = () =>{
 
 const logout = () =>{
     localStorage.removeItem('access_token')
+    sessionStorage.removeItem('access_token')
     checkIsLoggedIn()
 }
 
@@ -225,8 +239,8 @@ const listTodo = () =>{
                 <td id="logo-click" title='edit status' style="color:${color}" align="center"><i class="fas ${iconStatus}" onClick="editStatusTodo(${todo.id})"></i></td>
                 <td>${due_date}</td>
                 <td align="center">
-                    <a id="logo-click" onClick="deleteTodo(${todo.id})" style="margin-right:15px;"><i class="fas fa-trash-alt" title="hapus Todo"></i></a>
-                    <a id="logo-click" onClick="formEditTodo(${todo.id})"><i class="fas fa-edit" title="edit Todo"></i></a>
+                    <a id="logo-click" onClick="formEditTodo(${todo.id})" style="margin-right:10px;"><i class="fas fa-edit" title="edit Todo"></i></a>
+                    <a id="logo-click" onClick="deleteTodo(${todo.id})"><i class="fas fa-trash-alt" title="hapus Todo"></i></a>
                 </td>
             </tr>
             `)
@@ -244,7 +258,6 @@ const listTodo = () =>{
 const addTodo = () =>{
     const title = $('#title').val()
     const description = $('#description').val()
-    const status = $('#status').val()
     const due_date = $('#due_date').val()
 
     $.ajax({
@@ -264,9 +277,7 @@ const addTodo = () =>{
         listTodo()
         $('#title').val('')
         $('#description').val('')
-        $('#status').val('')
         $('#due_date').val('')
-
         swal("Success!", "Data Todo berhasil ditambah!", "success");
     })
     .fail((err)=>{
@@ -320,9 +331,6 @@ const deleteTodo = (id) => {
             swal("data aman tidak jadi dihapus");
         }
     });
-
-
-    
 }
 
 
@@ -337,8 +345,8 @@ const formEditTodo = (id) =>{
     .done((data)=>{
         let due_date = new Date(data.data.due_date).toISOString().split('T')[0]
         localStorage.setItem('TodoId', id)
-        $('#form-Todo').hide()
-        $('#form-edit-Todo').show()
+        $('#formTodo').hide()
+        $('#editFormTodo').show()
         $('#edit-title').val(data.data.title)
         $('#edit-description').val(data.data.description)
         $('#edit-status').val(data.data.status)
@@ -380,12 +388,16 @@ const editTodo = () => {
             })
             .done((data)=>{
                 listTodo()
-                checkIsLoggedIn()
-                $('#form-Todo').show()
+                $('#edit-title').val('')
+                $('#edit-description').val('')
+                $('#edit-due_date').val('')
+                
                 // swal message
                 swal("data berhasil diedit", {
                     icon: "success",
                 });
+                localStorage.removeItem('TodoId')
+                checkIsLoggedIn()
             })
             .fail((err)=>{
                 console.log(err.responseJSON)
@@ -449,6 +461,9 @@ const dataNews = () =>{
     .fail((err)=>{
         console.log(err)
     })
+    .always(()=>{
+        console.log('data covid news')
+    })
 }
 
 
@@ -469,7 +484,7 @@ const dataCovidPositif = () =>{
         console.log(err.responseJSON.errorMessage)
     })
     .always(()=>{
-        console.log('selesai')
+        console.log('data covid positif')
     })
 }
 
@@ -488,7 +503,7 @@ const dataCovidSembuh = () =>{
         console.log(err.responseJSON.errorMessage)
     })
     .always(()=>{
-        console.log('selesai')
+        console.log('data covid sembuh')
     })
 }
 
@@ -508,7 +523,7 @@ const dataCovidDirawat = () =>{
         console.log(err.responseJSON.errorMessage)
     })
     .always(()=>{
-        console.log('selesai')
+        console.log('data covid dirawat')
     })
 }
 
@@ -527,7 +542,7 @@ const dataCovidMeninggal = () =>{
         console.log(err.responseJSON.errorMessage)
     })
     .always(()=>{
-        console.log('selesai')
+        console.log('data covid meninggal')
     })
 }
 // 3rd Party Kawal Covid END

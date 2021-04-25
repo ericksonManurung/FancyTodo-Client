@@ -3,6 +3,38 @@
     color: black;
 }
 
+body{ 
+    background-attachment: fixed;
+    display: block;
+    position: relative;
+} 
+
+body::after{
+    content: "";
+    background: url('images/bg-fancytodo.jpg');
+    background-repeat:no-repeat;
+    background-position:center center;
+    opacity: 0.3;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    z-index: -1;  
+}
+
+#judul-app{
+    font-family: 'Kaushan Script', cursive;
+    font-size: 45px;
+    margin: 10px;
+    color: #f4d160;
+}
+
+#navbar{
+    background-color: #28527a;
+}
+
+
 #text-news-jalan:hover{
     color: blue;
 }
@@ -17,7 +49,7 @@
     font-size: 30px;
     border: none;
     outline: none;
-    background-color: rgb(252, 61, 61);
+    background-color: rgb(206, 47, 47);
     color: white;
     cursor: pointer;
     padding: 7px 20px;
