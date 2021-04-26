@@ -14,7 +14,7 @@ body::after{
     background: url('images/bg-fancytodo.jpg');
     background-repeat:no-repeat;
     background-position:center center;
-    opacity: 0.3;
+    opacity: 0.2;
     top: 0;
     left: 0;
     bottom: 0;

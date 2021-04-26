@@ -2,7 +2,7 @@ $(document).ready(()=>{
     console.log('hello world')
 
     // get API News
-    dataNews()
+    // dataNews()
     // get API KawalCovid
     dataCovidPositif()
     dataCovidSembuh()
@@ -26,7 +26,7 @@ $(document).ready(()=>{
 
     $('#judul-app').on('click',(e)=>{
         e.preventDefault()
-        dataNews()
+        // dataNews()
     })
 
     $('#formRegister').on('submit', (e)=>{
@@ -447,24 +447,24 @@ const editStatusTodo = (id) =>{
 
 
 // 3rd Party News
-const dataNews = () =>{
-    let spasi = '&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;'
-    $.ajax({
-        method: 'GET',
-        url: 'http://localhost:3000/news'
-    })
-    .done((data)=>{
-        data.data.forEach((news)=>{
-            $('#news-run').append(`<a href="${news.url}" target="_blank" id="text-news-jalan">${news.title} ${spasi}</a>`)
-        })
-    })
-    .fail((err)=>{
-        console.log(err)
-    })
-    .always(()=>{
-        console.log('data covid news')
-    })
-}
+// const dataNews = () =>{
+//     let spasi = '&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;'
+//     $.ajax({
+//         method: 'GET',
+//         url: 'http://localhost:3000/news'
+//     })
+//     .done((data)=>{
+//         data.data.forEach((news)=>{
+//             $('#news-run').append(`<a href="${news.url}" target="_blank" id="text-news-jalan">${news.title} ${spasi}</a>`)
+//         })
+//     })
+//     .fail((err)=>{
+//         console.log(err)
+//     })
+//     .always(()=>{
+//         console.log('data covid news')
+//     })
+// }
 
 
 
