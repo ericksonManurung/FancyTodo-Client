@@ -2,7 +2,7 @@ $(document).ready(()=>{
     console.log('hello world')
 
     // get API News
-    // dataNews()
+    dataNews()
     // get API KawalCovid
     dataCovidPositif()
     dataCovidSembuh()
@@ -66,8 +66,8 @@ $(document).ready(()=>{
 
     $('#cancel-edit-todo').on('click', (e)=>{
         e.preventDefault()
-        $('#formTodo').show()
-        $('#editFormTodo').hide()
+        $('#formTodo').show(1500)
+        $('#editFormTodo').hide(1500)
     })
     
 })
@@ -151,7 +151,7 @@ const regis = () => {
         errMsg.forEach(error =>{
             Toastify({
                 text: error,
-                gravity: "bottom", // `top` or `bottom`
+                gravity: "top", // `top` or `bottom`
                 position: "right", // `left`, `center` or `right`
                 backgroundColor: "linear-gradient(to right, #f75b5b, #fc1d1d)",
                 duration: 3000
@@ -186,10 +186,12 @@ const login = () =>{
         listTodo()
     })
     .fail(err =>{
+        $('#email').val('')
+        $('#password').val('')
         let error = err.responseJSON.errorMessage
         Toastify({
             text: error,
-            gravity: "bottom", // `top` or `bottom`
+            gravity: "top", // `top` or `bottom`
             position: "right", // `left`, `center` or `right`
             backgroundColor: "linear-gradient(to right, #f75b5b, #fc1d1d)",
             duration: 3000
@@ -205,6 +207,7 @@ const login = () =>{
 
 const logout = () =>{
     localStorage.removeItem('access_token')
+    localStorage.removeItem('TodoId')
     sessionStorage.removeItem('access_token')
     checkIsLoggedIn()
 }
@@ -285,11 +288,10 @@ const addTodo = () =>{
         errMsg.forEach(error =>{
             Toastify({
                 text: error,
-                gravity: "bottom", // `top` or `bottom`
+                gravity: "top", // `top` or `bottom`
                 position: "right", // `left`, `center` or `right`
                 backgroundColor: "linear-gradient(to right, #f75b5b, #fc1d1d)",
                 duration: 3000
-                
             }).showToast();
         })
         console.log('selesai add todo')
@@ -325,6 +327,15 @@ const deleteTodo = (id) => {
             })
             .fail((err)=>{
                 console.log(err.responseJSON)
+                let error = err.responseJSON.errorMessage
+                Toastify({
+                    text: error,
+                    gravity: "top", // `top` or `bottom`
+                    position: "right", // `left`, `center` or `right`
+                    backgroundColor: "linear-gradient(to right, #f75b5b, #fc1d1d)",
+                    duration: 3000
+                    
+                }).showToast();
             })
             // proses Ajax end
         }else{
@@ -345,8 +356,8 @@ const formEditTodo = (id) =>{
     .done((data)=>{
         let due_date = new Date(data.data.due_date).toISOString().split('T')[0]
         localStorage.setItem('TodoId', id)
-        $('#formTodo').hide()
-        $('#editFormTodo').show()
+        $('#formTodo').hide(1500)
+        $('#editFormTodo').show(1500)
         $('#edit-title').val(data.data.title)
         $('#edit-description').val(data.data.description)
         $('#edit-status').val(data.data.status)
@@ -354,6 +365,15 @@ const formEditTodo = (id) =>{
     })
     .fail((err)=>{
         console.log(err.responseJSON)
+        let error = err.responseJSON.errorMessage
+        Toastify({
+            text: error,
+            gravity: "top", // `top` or `bottom`
+            position: "right", // `left`, `center` or `right`
+            backgroundColor: "linear-gradient(to right, #f75b5b, #fc1d1d)",
+            duration: 3000
+            
+        }).showToast();
     })
 }
 
@@ -400,7 +420,15 @@ const editTodo = () => {
                 checkIsLoggedIn()
             })
             .fail((err)=>{
-                console.log(err.responseJSON)
+                let error = err.responseJSON.errorMessage
+                Toastify({
+                    text: error,
+                    gravity: "top", // `top` or `bottom`
+                    position: "right", // `left`, `center` or `right`
+                    backgroundColor: "linear-gradient(to right, #f75b5b, #fc1d1d)",
+                    duration: 3000
+                    
+                }).showToast();
             })
             // proses Ajax end
 
@@ -438,6 +466,15 @@ const editStatusTodo = (id) =>{
             })
             .fail((err)=>{
                 console.log(err)
+                let error = err.responseJSON.errorMessage
+                Toastify({
+                    text: error,
+                    gravity: "top", // `top` or `bottom`
+                    position: "right", // `left`, `center` or `right`
+                    backgroundColor: "linear-gradient(to right, #f75b5b, #fc1d1d)",
+                    duration: 3000
+                    
+                }).showToast();
             })
         } else {
           swal("status tidak jadi diubah");
@@ -447,24 +484,24 @@ const editStatusTodo = (id) =>{
 
 
 // 3rd Party News
-// const dataNews = () =>{
-//     let spasi = '&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;'
-//     $.ajax({
-//         method: 'GET',
-//         url: 'http://localhost:3000/news'
-//     })
-//     .done((data)=>{
-//         data.data.forEach((news)=>{
-//             $('#news-run').append(`<a href="${news.url}" target="_blank" id="text-news-jalan">${news.title} ${spasi}</a>`)
-//         })
-//     })
-//     .fail((err)=>{
-//         console.log(err)
-//     })
-//     .always(()=>{
-//         console.log('data covid news')
-//     })
-// }
+const dataNews = () =>{
+    let spasi = '&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;'
+    $.ajax({
+        method: 'GET',
+        url: 'http://localhost:3000/news'
+    })
+    .done((data)=>{
+        data.data.forEach((news)=>{
+            $('#news-run').append(`<a href="${news.url}" target="_blank" id="text-news-jalan">${news.title} ${spasi}</a>`)
+        })
+    })
+    .fail((err)=>{
+        console.log(err)
+    })
+    .always(()=>{
+        console.log('data covid news')
+    })
+}
 
 
 

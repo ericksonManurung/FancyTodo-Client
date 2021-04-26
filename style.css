@@ -1,6 +1,11 @@
 #text-news-jalan{
+    font-size: 18px;
     text-decoration:none;
     color: black;
+}
+
+body{
+    font-family: 'Original Surfer', cursive;
 }
 
 body{ 
@@ -14,7 +19,7 @@ body::after{
     background: url('images/bg-fancytodo.jpg');
     background-repeat:no-repeat;
     background-position:center center;
-    opacity: 0.2;
+    opacity: 0.1;
     top: 0;
     left: 0;
     bottom: 0;
